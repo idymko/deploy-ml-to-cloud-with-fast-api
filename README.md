@@ -1,5 +1,9 @@
 Working in a command line environment is recommended for ease of use with git and dvc. If on Windows, WSL1 or 2 is recommended.
 
+In this project, you will apply the skills acquired in this course to develop a classification model on publicly available Census Bureau data. You will create unit tests to monitor the model performance on various data slices. Then, you will deploy your model using the FastAPI package and create API tests. The slice validation and the API tests will be incorporated into a CI/CD framework using GitHub Actions.
+
+Two datasets will be provided in the starter code on the following page to experience updating the dataset and model in git.
+
 # Environment Set up
 * **Option 1: Using pip and venv (Recommended)**
     * Ensure you have Python 3.13 installed
@@ -19,6 +23,12 @@ Working in a command line environment is recommended for ease of use with git an
         * conda activate deploy-ml
         * conda install pip
         * pip install -r requirements.txt
+    * Setup DVC 
+        * `dvc init`
+        * Create local remote folder `mkdir ../local_remote`
+        * `dvc remote add -d localremote ../local_remote`
+        * `dvc exp run`
+        * `dvc exp show`
 
 ## Repositories
 * Create a directory for the project and initialize git.
@@ -32,6 +42,8 @@ Working in a command line environment is recommended for ease of use with git an
 * Download census.cs (https://archive.ics.uci.edu/dataset/20/census+income) and commit it to dvc.
 * This data is messy, try to open it in pandas and see what you get.
 * To clean it, use your favorite text editor to remove all spaces.
+
+
 
 # Model
 * Using the starter code, write a machine learning model that trains on the clean data and saves the model. Complete any function that has been started.

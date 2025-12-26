@@ -1,0 +1,8 @@
+train:
+  data_path: data/census.csv
+  n_estimators: 50
+  max_depth: 65
+
+evaluate:
+  data_path: data/eval_data.csv
+  model_path: model/model_package.pkl

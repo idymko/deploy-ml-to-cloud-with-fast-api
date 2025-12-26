@@ -1,8 +1,10 @@
 scikit-learn==1.8.0
 pandas==2.3.3
-numpy==2.4.0
+numpy==1.26.4
 pytest==9.0.2
 jupyter==1.1.1
 fastapi==0.127.0
 uvicorn==0.40.0
 flake8==7.3.0
+ydata-profiling==4.18.0
+dvc==3.65.0

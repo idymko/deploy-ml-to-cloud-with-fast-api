@@ -1,0 +1,18 @@
+stages:
+  train:
+    cmd: python train_model.py
+    outs:
+      - model/model_package.pkl
+      - output/score.json
+    params:
+      - train.n_estimators
+      - train.max_depth
+
+  evaluation:
+    cmd: python evaluate_model.py
+
+metrics:
+  - output/score.json
+
+params:
+  - params.yaml
