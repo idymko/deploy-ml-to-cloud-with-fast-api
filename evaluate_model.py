@@ -1,5 +1,4 @@
-from src.model import load_model_package, inference, compute_model_metrics
-from src.data import process_data
+from src.model import load_model_package, inference, compute_model_metrics, performance_per_slice
 import pandas as pd 
 import yaml
 
@@ -12,15 +11,17 @@ data_path = params['evaluate']['data_path']
 model_path = params['evaluate']['model_path']
 
 
-
-model, encoder, lb, scaler = load_model_package(model_path)
+# Evaluate overall model
+model, label_encoder = load_model_package(model_path)
 eval_data = pd.read_csv(data_path)
+X_test = eval_data.copy()
+y_test = X_test.pop("salary")
+y_test = label_encoder.transform(y_test.values).ravel()
+preds = inference(model, X_test)
 
-X_eval, y_eval, _, _, _ = process_data(
-		eval_data, categorical_features=[], label="salary", training=False, 
-		encoder=encoder, lb=lb, scaler=scaler
-	)
-preds = inference(model, X_eval)
+precision, recall, fbeta = compute_model_metrics(y_test, preds)
+print(f"model metrics for data_path: {data_path}\nprecision:{precision:.4f},recall:{recall:.4f},fbeta:{fbeta:.4f}\n")
 
-precision, recall, fbeta, f1 = compute_model_metrics(y_eval, preds)
-print(f"f1: {f1}, precision: {precision}, recall: {recall}, fbeta: {fbeta}")
+# Evaluate model for difference slices
+performance_per_slice(eval_data.copy(), model, label_encoder, 'race')
+performance_per_slice(eval_data.copy(), model, label_encoder, 'education')

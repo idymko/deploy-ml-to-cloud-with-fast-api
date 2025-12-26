@@ -1,20 +1,28 @@
 from sklearn.metrics import fbeta_score, precision_score, recall_score, f1_score
 from sklearn.ensemble import RandomForestClassifier
 import joblib
-from src.data import process_data
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import LabelBinarizer, OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
+import pandas as pd 
 
-def get_inference_pipeline(rf_config, y):
+def get_pipeline(rf_config):
 	"""
 	Create a pipeline including:
 	* data preprocessing for categorical and numerical values
  	* model for training
+  
+  	Inputs
+	------
+	rf_config: dict
+		config for RandomForestClassifier
+	
+	Outputs
+	------
+	model_pipeline: Pipeline
+		preprocessing and model pipeline
+  
 	"""
-  	# Encode the labels
-	label_encoder = LabelBinarizer()
-	y_encoded = label_encoder.fit_transform(y)
  
 	# Categorical features
 	categorical_features = [
@@ -56,16 +64,16 @@ def get_inference_pipeline(rf_config, y):
 	random_forest = RandomForestClassifier(**rf_config)
 
 	# Create the inference pipeline.
-	sk_pipe = Pipeline(
+	model_pipeline = Pipeline(
 		steps=[
 			("preprocessor", preprocessor),
 			("random_forest", random_forest)
 		]
 	)
  
-	return sk_pipe, y_encoded
+	return model_pipeline
  
-def train_model(X_train, y_train):
+def train_model(X_train, y_train, rf_config):
 	"""
 	Trains a machine learning model and returns it.
 
@@ -75,20 +83,29 @@ def train_model(X_train, y_train):
 		Training data.
 	y_train : np.ndarray
 		Labels.
+	rf_config: dict
+		config for RandomForestClassifier
 	Returns
 	-------
 	model : RandomForestClassifier
 		Trained machine learning model.
+  	label_encoder : LabelBinarizer
+		Label encoder
 	"""
-	pipeline, y_encoded_train = get_inference_pipeline(X_train, y_train)
-	pipeline.fit(X_train, y_encoded_train)
 	
-	return pipeline
+	# Encode the labels
+	label_encoder = LabelBinarizer()
+	y_train_encoded = label_encoder.fit_transform(y_train.values).ravel()
+ 
+	model = get_pipeline(rf_config)
+	model.fit(X_train, y_train_encoded)
+	
+	return model, label_encoder
 
 
 def compute_model_metrics(y, preds):
 	"""
-	Validates the trained machine learning model using precision, recall, and F1.
+	Validates the trained machine learning model using precision, recall.
 
 	Inputs
 	------
@@ -101,14 +118,11 @@ def compute_model_metrics(y, preds):
 	precision : float
 	recall : float
 	fbeta : float
-	f1: float
 	"""
 	fbeta = fbeta_score(y, preds, beta=1, zero_division=1)
 	precision = precision_score(y, preds, zero_division=1)
 	recall = recall_score(y, preds, zero_division=1)
-	f1 = f1_score(y, preds)
-	return precision, recall, fbeta, f1
-
+	return precision, recall, fbeta
 
 def inference(model, X):
 	""" Run model inferences and return the predictions.
@@ -130,45 +144,51 @@ def inference(model, X):
 
 def load_model_package(path):
 	# Load the model package
-	loaded_package = joblib.load(path) # 'model_package.pkl'
+	loaded_package = joblib.load(path)
 
 	# Access the components
 	model = loaded_package['model']
-	encoder = loaded_package['encoder']
-	lb = loaded_package['label_binarizer']
-	scaler = loaded_package['scaler']
+	label_encoder = loaded_package['label_encoder']
 	
-	return model, encoder, lb, scaler
+	return model, label_encoder
 
-def performance_per_slice(data, model):
+def performance_per_slice(data, model, label_encoder, feature):
 	"""
 	Write a function that outputs the performance of the model on slices of the data.
 
 	Suggestion: for simplicity, the function can 
 		just output the performance on slices of just the categorical features.
+	Inputs
+	------
+	data : pd.DataFrame
+	model : Pipeline
+	label_encoder : label encoder for y values
+	feature : str, name of the feature on which to perform the model evaluation
 	"""
-	
-	model, encoder, lb, scaler = load_model_package("model/model_package.pkl")
- 
-	X_eval, y_eval, _, _, _ = process_data(
-		data, categorical_features=[], label="salary", training=False, 
-		encoder=encoder, lb=lb, scaler=scaler
-	)
- 	
-	cat_features = ["education"]
-	for feature in cat_features:
-		print(f"\nfeature: {feature}")
-		for cls in data[feature].unique():
-			data_slice = data[data[feature]==cls]
-			preds = inference(model, X_eval)
-			precision, recall, fbeta, f1 = compute_model_metrics(y_eval, preds)
-			print(f"f1: {f1}, precision: {precision}, recall: {recall}, fbeta: {fbeta}")
-	
 
-# if __name__ == "__main__":
+	y_test = data.pop("salary")
+	y_test = label_encoder.transform(y_test.values).ravel()
+
+	results = []  # List to collect results
+
+	for cls_ in data[feature].unique():
+		cls_indies = data[feature]==cls_
+		data_slice = data[cls_indies]
+		preds = inference(model, data_slice)
+		precision, recall, fbeta = compute_model_metrics(y_test[cls_indies], preds)
+
+		# Append results to the list
+		results.append({
+			'feature': feature,
+			'class': cls_,
+			'precision': precision,
+			'recall': recall,
+			'fbeta': fbeta
+		})
 	
-#     y_true =    [1, 0, 1, 1, 0, 1, 0, 0, 1, 0]
-#     preds =     [1, 0, 1, 0, 0, 1, 1, 0, 0, 0]
-#     fbeta, precision, recall, f1 = compute_model_metrics(y_true, preds)
-	
-#     print(f"f1: {f1}, precision: {precision}, recall: {recall}, fbeta: {fbeta}")
+	results_df = pd.DataFrame(results)
+	results_df = results_df.sort_values(by='precision', ascending=True)
+	results_df = results_df.reset_index(drop=True)
+	results_df.to_csv('output/slice_output.txt')
+	print("Model metrics for slices")
+	print(results_df.head(10))

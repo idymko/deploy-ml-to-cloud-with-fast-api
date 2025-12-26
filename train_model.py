@@ -8,66 +8,57 @@ import json
 import yaml
 
 # Add the necessary imports for the starter code.
-from src.data import process_data
 from src.model import train_model, compute_model_metrics, inference
 
 # Load parameters
 with open('params.yaml') as f:
     params = yaml.safe_load(f)
 
-# Load in the data.    
 data_path = params['train']['data_path']
-data = pd.read_csv(data_path)
+n_estimators = params['train']['n_estimators']
+max_depth = params['train']['max_depth']
+random_state  = params['train']['random_state']
 
-# Optional enhancement, use K-fold cross validation instead of a train-test split.
-train, test = train_test_split(data, test_size=0.20, random_state=42)
+# Load in the data.  
+X = pd.read_csv(data_path)
+y = X.pop("salary")         # separate label
 
-## Dump some data for testing. 
-test.to_csv('data/eval_data.csv', index=False)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-cat_features = [
-    "workclass",
-    "education",
-    "marital-status",
-    "occupation",
-    "relationship",
-    "race",
-    "sex",
-    "native-country",
-]
-X_train, y_train, encoder, lb, scaler = process_data(
-    train, categorical_features=cat_features, label="salary", training=True
-)
+## Dump some data for testing (ideally we should have a separate set). 
+test_data = pd.concat([X_test.reset_index(drop=True), y_test.reset_index(drop=True)], axis=1)
+test_data.to_csv('data/test_data.csv', index=False)
 
 # Train model
-model = train_model(X_train, y_train)
+model, label_encoder = train_model(X_train=X_train, 
+                                   y_train=y_train,
+                                   rf_config = {
+                                        'n_estimators': n_estimators,
+                                        'max_depth': max_depth,
+                                        'random_state': random_state
+                                    })
 
 # Save model as dictionary
-model_package = {
-    'model': model,
-    'encoder': encoder,
-    'label_binarizer': lb, 
-    'scaler': scaler
+artifact = {
+    "model": model,
+    "label_encoder": label_encoder
 }
-joblib.dump(model_package, 'model/model_package.pkl')
-
-
-# Process the test data with the process_data function.
-X_test, y_test, _, _, _ = process_data(
-    test, categorical_features=cat_features, label="salary", training=False, 
-    encoder=encoder, lb=lb, scaler=scaler
-)
+joblib.dump(artifact, 'model/model.pkl')
 
 # Predictions and evaluation
 preds = inference(model, X_test)
-precision, recall, fbeta, f1 = compute_model_metrics(y_test, preds)
-print(f"f1: {f1}, precision: {precision}, recall: {recall}, fbeta: {fbeta}")
+y_test = label_encoder.transform(y_test.values).ravel()
+score = model.score(X_test,y_test)
+print(f"score: {score}")
+
+precision, recall, fbeta = compute_model_metrics(y_test, preds)
+precision, recall, fbeta = compute_model_metrics(y_test, preds)
+print(f"precision: {precision}, recall: {recall}, fbeta: {fbeta}")
 
 # Save the score to a file for traceability
 with open('output/score.json', 'w') as score_file:
     json.dump(
-        {"F1 score": f1, 
-         "precision": precision, 
+        {"precision": precision, 
          "recall": recall, 
          "fbeta": fbeta
          }, 

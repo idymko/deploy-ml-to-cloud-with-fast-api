@@ -5,30 +5,27 @@ In this project, you will apply the skills acquired in this course to develop a 
 Two datasets will be provided in the starter code on the following page to experience updating the dataset and model in git.
 
 # Environment Set up
-* **Option 1: Using pip and venv (Recommended)**
+* **Option 1: Using pip and venv**
     * Ensure you have Python 3.13 installed
     * Create virtual environment: `python3.13 -m venv .venv`
     * Activate environment: `source .venv/bin/activate` (On Windows: `.venv\Scripts\activate`)
     * Install dependencies: `pip install -r starter/requirements.txt`
 
-* **Option 2: Using conda**
+* **Option 2: Using conda  (Recommended on Mac)**
     * Download and install conda if you don't have it already.
     * `conda create -n deploy-ml "python=3.13" scikit-learn pandas numpy pytest jupyter jupyterlab fastapi uvicorn pydantic httpx matplotlib seaborn -c conda-forge`
     * Install git either through conda ("conda install git") or through your CLI, e.g. sudo apt-get git.
     * `conda activate deploy-ml`
-    * Check python version: `python --version`
-    * You can remove venv `rm -rf myenv`
-    * Alternatively:
-        * conda create --name deploy-ml
-        * conda activate deploy-ml
-        * conda install pip
-        * pip install -r requirements.txt
-    * Setup DVC 
-        * `dvc init`
-        * Create local remote folder `mkdir ../local_remote`
-        * `dvc remote add -d localremote ../local_remote`
-        * `dvc exp run`
-        * `dvc exp show`
+    * `conda install pip`
+    * `pip install -r requirements.txt`
+
+# Setup DVC 
+* `dvc init`
+* Create local remote folder `mkdir ../local_remote`
+* `dvc remote add -d localremote ../local_remote`
+* `dvc exp run`
+* Change parameters on the fly: dvc exp run --set-param train.n_estimators=50
+* `dvc exp show`
 
 ## Repositories
 * Create a directory for the project and initialize git.

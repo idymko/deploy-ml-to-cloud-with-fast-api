@@ -4,16 +4,16 @@ stages:
     cmd: python train_model.py
     params:
       params.yaml:
-        train.max_depth: 65
-        train.n_estimators: 50
+        train.max_depth: 10
+        train.n_estimators: 100
     outs:
-    - path: model/model_package.pkl
+    - path: model/model.pkl
       hash: md5
-      md5: 45c3a2705c5ff20fd405a2f390fdd14c
-      size: 14887137
+      md5: f71a61624862ec363c2e1dba42811b2d
+      size: 4300953
     - path: output/score.json
       hash: md5
-      md5: ea8a235d937e926c11a02a0df59599d5
-      size: 124
+      md5: 7e374bdf5213825aca0d07d69724e4a8
+      size: 78
   evaluation:
     cmd: python evaluate_model.py

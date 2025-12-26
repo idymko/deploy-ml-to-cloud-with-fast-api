@@ -1,8 +1,9 @@
 train:
   data_path: data/census.csv
-  n_estimators: 50
-  max_depth: 65
+  n_estimators: 100
+  max_depth: 10
+  random_state: 42
 
 evaluate:
-  data_path: data/eval_data.csv
-  model_path: model/model_package.pkl
+  data_path: data/test_data.csv
+  model_path: model/model.pkl
