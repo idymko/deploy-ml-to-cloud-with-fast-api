@@ -19,13 +19,14 @@ Two datasets will be provided in the starter code on the following page to exper
     * `conda install pip`
     * `pip install -r requirements.txt`
 
-# Setup DVC 
+## Setup DVC 
 * `dvc init`
 * Create local remote folder `mkdir ../local_remote`
 * `dvc remote add -d localremote ../local_remote`
 * `dvc exp run`
 * Change parameters on the fly: dvc exp run --set-param train.n_estimators=50
-* `dvc exp show`
+* Show experiment results: `dvc exp show`
+* Push data to remote: `dvc push`
 
 ## Repositories
 * Create a directory for the project and initialize git.
