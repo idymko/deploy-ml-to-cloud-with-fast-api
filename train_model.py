@@ -27,7 +27,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 ## Dump some data for testing (ideally we should have a separate set). 
 test_data = pd.concat([X_test.reset_index(drop=True), y_test.reset_index(drop=True)], axis=1)
-test_data.to_csv('data/test_data.csv', index=False)
+test_data.to_csv('testing/test_data.csv', index=False)
 
 # Train model
 model, label_encoder = train_model(X_train=X_train, 
@@ -43,7 +43,7 @@ artifact = {
     "model": model,
     "label_encoder": label_encoder
 }
-joblib.dump(artifact, 'model/model.pkl')
+joblib.dump(artifact, 'output/model.pkl')
 
 # Predictions and evaluation
 preds = inference(model, X_test)

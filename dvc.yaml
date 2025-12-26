@@ -2,11 +2,12 @@ stages:
   train:
     cmd: python train_model.py
     outs:
-      - model/model.pkl
+      - output/model.pkl
       - output/score.json
     params:
       - train.n_estimators
       - train.max_depth
+      - train.random_state
 
   evaluation:
     cmd: python evaluate_model.py

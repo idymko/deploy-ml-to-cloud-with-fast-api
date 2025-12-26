@@ -6,8 +6,9 @@ stages:
       params.yaml:
         train.max_depth: 10
         train.n_estimators: 100
+        train.random_state: 42
     outs:
-    - path: model/model.pkl
+    - path: output/model.pkl
       hash: md5
       md5: f71a61624862ec363c2e1dba42811b2d
       size: 4300953

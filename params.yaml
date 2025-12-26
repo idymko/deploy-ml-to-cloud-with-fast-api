@@ -5,5 +5,5 @@ train:
   random_state: 42
 
 evaluate:
-  data_path: data/test_data.csv
-  model_path: model/model.pkl
+  data_path: testing/test_data.csv
+  model_path: testing/model.pkl

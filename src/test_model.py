@@ -7,14 +7,14 @@ def test_load_model_package():
     Test load_model_package function
     """
     
-    model, label_encoder = load_model_package('model/model.pkl')
+    model, label_encoder = load_model_package('testing/model.pkl')
     assert model is not None
     assert label_encoder is not None
 
 @pytest.fixture
 def load_data():
-    model, label_encoder = load_model_package('model/model.pkl')
-    X_test = pd.read_csv("data/test_data.csv")
+    model, label_encoder = load_model_package('testing/model.pkl')
+    X_test = pd.read_csv("testing/test_data.csv")
     y_test = X_test.pop("salary")
     
     return X_test, y_test, model, label_encoder
