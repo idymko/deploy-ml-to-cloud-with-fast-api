@@ -1,5 +1,4 @@
 from fastapi.testclient import TestClient
-import warnings 
 import pytest
 
 from api import app # import our app

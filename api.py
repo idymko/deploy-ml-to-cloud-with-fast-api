@@ -49,19 +49,19 @@ class Data(BaseModel):
     
     # Using Pydantic Validator
     
-    age: Annotated[int, Field(gt=0, lt=122, description="Must be a positive number")]
+    age: Annotated[int, Field(gt=0, lt=122, description="Age must be a positive number")]
     workclass: Annotated[str, Field(description="Workclass", examples = valid_workclasses)]
     fnlgt: Annotated[int, Field(gt=0, description="Must be a positive number")]
     education: Annotated[str, Field(description="Education", examples = valid_education)]
-    education_num: Annotated[int, Field(ge=0, description="Must not be a negative number", alias = "education-num")]
+    education_num: Annotated[int, Field(ge=0, description="Education Level must not be a negative number", alias = "education-num")]
     marital_status: Annotated[str, Field(description="Marital status", alias='marital-status', examples = valid_marital_status)]
     occupation: Annotated[str, Field(description="Occupation type", examples = valid_occupation)]
     relationship: Annotated[str, Field(description="Relationship status", examples = valid_relationship)]
     race: Annotated[str, Field(description="Race category", examples = valid_race)]
     sex: Annotated[str, Field(description="Gender", examples = valid_sex)]
-    capital_gain: Annotated[int, Field(ge=0, description="Must not be a negative number", alias = "capital-gain")]
-    capital_loss: Annotated[int, Field(ge=0, description="Must not be a negative number", alias = "capital-loss")]
-    hours_per_week: Annotated[int, Field(ge=0, description="Must not be a negative number", alias = "hours-per-week")]
+    capital_gain: Annotated[int, Field(ge=0, description="Capital gain must not be a negative number", alias = "capital-gain")]
+    capital_loss: Annotated[int, Field(ge=0, description="Capital loss must not be a negative number", alias = "capital-loss")]
+    hours_per_week: Annotated[int, Field(ge=0, description="Hours per week must not be a negative number", alias = "hours-per-week")]
     native_country: Annotated[str, Field(description="Country of origin", alias='native-country', examples = valid_native_countries)]
     
     @field_validator('workclass')
@@ -149,19 +149,21 @@ async def get_greeting():
 @app.post("/ml/")
 async def ml_inference(payload: Data):
     # Validation happens automatically through Pydantic
-    # Load parameters
-    with open('params.yaml') as f:
-        params = yaml.safe_load(f)
-
-    # Load in the data.    
-    model_path = params['evaluate']['model_path']
-
-    # Evaluate overall model
-    model, label_encoder = load_model_package(model_path)
     
+    # Preprocess payload to fit the intput of the model
     df = pd.DataFrame([payload.model_dump()])
     df.columns = df.columns.str.replace("_", "-", regex=False)
+    
+    # Load in the model. 
+    with open('params.yaml') as f:
+        params = yaml.safe_load(f)
+        
+    model, label_encoder = load_model_package(params['evaluate']['model_path'])
+    
+    # Peform inference 
     preds = inference(model, df)
-    return {"prediction": label_encoder.inverse_transform(preds).tolist()[0], "input": payload}
+    preds_encoded = label_encoder.inverse_transform(preds)
+    
+    return {"prediction": preds_encoded.tolist()[0], "input": payload}
 
 # # Usage: `uvicorn api:app --reload`
