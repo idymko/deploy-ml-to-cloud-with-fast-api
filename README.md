@@ -60,7 +60,15 @@ Two datasets will be provided in the starter code on the following page to exper
 * Write 3 unit tests to test the API (one for the GET and two for POST, one that tests each prediction).
 
 # API Deployment
-* Create a free Heroku account (for the next steps you can either use the web GUI or download the Heroku CLI).
+* Deploy a Web Service from Render Console
+    * Create a free Render account (https://render.com/).
+    * After you log in to your account, click New Web Service.
+    * You will be prompted to connect your project's GitHub or Gitlab repo and branch to the Web Service.
+    * Configure Build and Start Command
+        * Build Command: `pip install -r requirements`
+        * Start Command: `uvicorn api:app --host 0.0.0.0 --port 10000`
+
+
 * Create a new app and have it deployed from your GitHub repository.
     * Enable automatic deployments that only deploy if your continuous integration passes.
     * Hint: think about how paths will differ in your local environment vs. on Heroku.

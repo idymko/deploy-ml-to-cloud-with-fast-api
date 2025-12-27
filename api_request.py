@@ -14,21 +14,21 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     payload = {
-        "age": 52, 
-        "workclass": "Self-emp-not-inc", 
+        "age": 34, 
+        "workclass": "Private", 
         "fnlgt": 289436, 
-        "education": "Doctorate", 
-        "education-num": 16, 
+        "education": "Masters", 
+        "education-num": 13, 
         "marital-status": 
-            "Married-civ-spouse", 
-            "occupation": "Prof-specialty", 
-            "relationship": "Husband", 
-            "race": "White", 
-            "sex": "Male", 
-            "capital-gain": 0, 
-            "capital-loss": 0, 
-            "hours-per-week": 60, 
-            "native-country": "United-States"}
+        "Married-civ-spouse", 
+        "occupation": "Prof-specialty", 
+        "relationship": "Husband", 
+        "race": "White", 
+        "sex": "Male", 
+        "capital-gain": 0, 
+        "capital-loss": 0, 
+        "hours-per-week": 40, 
+        "native-country": "Germany"}
     
     response = requests.post(args.url, json=payload)
     
