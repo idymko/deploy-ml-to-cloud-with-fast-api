@@ -3,10 +3,10 @@
 https://github.com/idymko/deploy-ml-to-cloud-with-fast-api.git
 
 * Trained Random Forest Classifier on on publicly available Census Bureau data: https://archive.ics.uci.edu/dataset/20/census+income
-* Performed testing
 * Implemented CI with GitHub Actions
-* Implented GET and POST Fast APIs
+* Implemented GET and POST Fast APIs
 * Implemented CD with Render
+* Performed testing (pytest)
 
 # Intro 
 
