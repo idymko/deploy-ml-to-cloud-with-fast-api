@@ -2,6 +2,12 @@
 
 https://github.com/idymko/deploy-ml-to-cloud-with-fast-api.git
 
+* Trained Random Forest Classifier on on publicly available Census Bureau data: https://archive.ics.uci.edu/dataset/20/census+income
+* Performed testing
+* Implemented CI with GitHub Actions
+* Implented GET and POST Fast APIs
+* Implemented CD with Render
+
 # Intro 
 
 Working in a command line environment is recommended for ease of use with git and dvc. If on Windows, WSL1 or 2 is recommended.
