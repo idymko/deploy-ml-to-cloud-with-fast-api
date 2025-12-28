@@ -4,6 +4,7 @@ from typing import Annotated, List
 from src.model import load_model_package, inference
 import yaml
 import pandas as pd
+from functools import lru_cache
 
 valid_workclasses = ["State-gov", "Self-emp-not-inc", "Private", "Federal-gov", "Local-gov", "Self-emp-inc", "Without-pay", "Never-worked"]
 valid_education = [
@@ -145,6 +146,20 @@ app = FastAPI(
 async def get_greeting():
     return "Greetings!"
 
+# Cache parameters
+@lru_cache()
+def get_params():
+    with open("params.yaml") as f:
+        return yaml.safe_load(f)
+
+# Cache model loading
+@lru_cache()
+def get_model():
+    params = get_params()
+    model_path = params["evaluate"]["model_path"]
+    return load_model_package(model_path)  # returns (model, label_encoder)
+
+
 # # POST on a different path that does model inference.
 @app.post("/ml/")
 async def ml_inference(payload: Data):
@@ -153,12 +168,9 @@ async def ml_inference(payload: Data):
     # Preprocess payload to fit the intput of the model
     df = pd.DataFrame([payload.model_dump()])
     df.columns = df.columns.str.replace("_", "-", regex=False)
-    
-    # Load in the model. 
-    with open('params.yaml') as f:
-        params = yaml.safe_load(f)
         
-    model, label_encoder = load_model_package(params['evaluate']['model_path'])
+    # Get cached model + encoder
+    model, label_encoder = get_model()
     
     # Peform inference 
     preds = inference(model, df)

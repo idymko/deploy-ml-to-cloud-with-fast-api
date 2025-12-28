@@ -1,8 +1,18 @@
-# Github repository link
+# Intro 
+
+End-to-end ML deployment including:
+
+* Building and evaluating a machine learning model
+* Creating a production-quality REST API with FastAPI
+* Implementing comprehensive testing and CI/CD
+* Deploying to a cloud platform with continuous delivery
+* Documenting your model with a proper model card
+
+## Github repository link
 
 https://github.com/idymko/deploy-ml-to-cloud-with-fast-api.git
 
-# Intro 
+## Considerations
 
 Working in a command line environment is recommended for ease of use with git and dvc. If on Windows, WSL1 or 2 is recommended.
 

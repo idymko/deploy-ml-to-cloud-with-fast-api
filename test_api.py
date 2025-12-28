@@ -12,7 +12,7 @@ async def test_get_greeting():
     assert r.json() == "Greetings!"
 
 @pytest.mark.anyio
-async def test_ml_inference_sucess_0():
+async def test_ml_inference_success_0():
     input_data = {"age": 29, 
                   "workclass": "Private", 
                   "fnlgt": 133937, 
@@ -38,7 +38,7 @@ async def test_ml_inference_sucess_0():
     assert response_data["prediction"] == "<=50K"
 
 @pytest.mark.anyio
-async def test_ml_inference_sucess_1():
+async def test_ml_inference_success_1():
     input_data = {"age": 52,
                             "workclass": "Self-emp-not-inc",
                             "fnlgt": 289436,

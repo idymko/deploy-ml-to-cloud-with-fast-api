@@ -41,3 +41,6 @@ Evaluation data can found in `data\test_data.csv`.
 
 ## Ethical Considerations
 Model shows lower precision for specific races such as Asian-Pac-Islander, which could be due to inbalanced dataset.
+
+## Caveats and Recommendations
+The limitation of the model is the age of training dataset (1994 Census) meaning a potential distribution shift in modern income predictions.
